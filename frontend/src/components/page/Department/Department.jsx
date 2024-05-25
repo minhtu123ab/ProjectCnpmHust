@@ -57,8 +57,10 @@ const Department = () => {
       case "Diện tích":
         return dataDepartment.filter((item) => item.acreage == value);
       case "Chủ sở hữu":
-        return dataDepartment.filter((item) =>
-          item.purchaser.toLowerCase().includes(value.toLowerCase())
+        return dataDepartment.filter(
+          (item) =>
+            item.purchaser &&
+            item.purchaser.toLowerCase().includes(value.toLowerCase())
         );
       case "Trạng thái":
         return dataDepartment.filter((item) =>
