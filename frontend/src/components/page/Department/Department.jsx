@@ -173,7 +173,11 @@ const Department = () => {
             </tr>
           </thead>
           <tbody>
-            {Array.isArray(searchData) &&
+            {Array.isArray(searchData) && searchData.length === 0 ? (
+              <tr>
+                <td colSpan="7">Không tìm thấy kết quả phù hợp</td>
+              </tr>
+            ) : (
               searchData.map((item, index) => (
                 <tr key={item._id}>
                   <td>{index + 1}</td>
@@ -195,7 +199,8 @@ const Department = () => {
                     </Button>
                   </td>
                 </tr>
-              ))}
+              ))
+            )}
           </tbody>
         </table>
       </div>
