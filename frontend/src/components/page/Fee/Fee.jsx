@@ -5,6 +5,7 @@ import { TiArrowUnsorted } from "react-icons/ti";
 import axios from "axios";
 import AddFeeForm from "./AddFeeForm/AddFeeForm";
 import FeeDetailsModal from "./FeeDetailsModal/FeeDetailsModal";
+import "./Fee.css";
 
 const Fee = () => {
   const [dataDepartment, setDataDepartment] = useState([]);
@@ -15,12 +16,8 @@ const Fee = () => {
   const [openEdit, setOpenEdit] = useState(false);
 
   const formatDate = (dateString) => {
-    // Kiểm tra nếu chuỗi rỗng hoặc không hợp lệ
     if (!dateString) return "";
-
-    // Cắt bỏ phần giờ từ chuỗi thời gian
-    const formattedDate = dateString.slice(0, 10); // Lấy 10 ký tự đầu tiên (YYYY-MM-DD)
-
+    const formattedDate = dateString.slice(0, 10);
     return formattedDate;
   };
 
@@ -38,6 +35,22 @@ const Fee = () => {
   }, []);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
+
+  const CheckFeeStatus = (unpaidRooms) => {
+    if (!unpaidRooms || unpaidRooms.length === 0) {
+      return (
+        <td className="th-fee" style={{ color: "green", fontWeight: "bold" }}>
+          Đã hoàn thành
+        </td>
+      );
+    } else {
+      return (
+        <td className="th-fee" style={{ color: "red", fontWeight: "bold" }}>
+          Chưa hoàn thành
+        </td>
+      );
+    }
+  };
 
   const handleSelect = (option) => {
     setSelectedOption(option);
@@ -85,12 +98,10 @@ const Fee = () => {
       cancelText: "Hủy bỏ",
       async onOk() {
         try {
-          // Gọi API để xóa phòng, thay 'http://localhost:3000/Departments' bằng URL của bạn
           const response = await axios.delete(
             `http://localhost:8080/fee/${item._id}`
           );
           if (response.status === 200) {
-            // Xóa thành công, cập nhật lại danh sách phòng
             setDataDepartment((prevData) =>
               prevData.filter((x) => x._id !== item._id)
             );
@@ -104,14 +115,15 @@ const Fee = () => {
         }
       },
       onCancel() {
-        // Người dùng hủy bỏ, chỉ cần đóng modal
         console.log("Cancel delete");
       },
     });
   };
+
   const updateFees = (newFee) => {
     setDataDepartment([...dataDepartment, newFee]);
   };
+
   const [selectedFee, setSelectedFee] = useState(null);
 
   const showFeeDetails = (fee) => {
@@ -187,28 +199,29 @@ const Fee = () => {
         <table className="table-container">
           <thead>
             <tr>
-              <th>STT</th>
-              <th>Tên phí</th>
-              <th>Loại phí</th>
-              <th>Giá phí</th>
-              <th>Ngày bắt đầu</th>
-              <th>Ngày kết thúc</th>
-              <th>Tùy chọn</th>
+              <th className="th-fee">STT</th>
+              <th className="th-fee">Tên phí</th>
+              <th className="th-fee">Loại phí</th>
+              <th className="th-fee">Giá phí</th>
+              <th className="th-fee">Ngày bắt đầu</th>
+              <th className="th-fee">Ngày kết thúc</th>
+              <th className="th-fee">Tùy chọn</th>
+              <th className="th-fee">Trạng thái</th>
             </tr>
           </thead>
           <tbody>
             {Array.isArray(searchData) && searchData.length > 0 ? (
               searchData.map((item, index) => (
                 <tr key={item._id}>
-                  <td>{index + 1}</td>
-                  <td>{item.nameFee}</td>
-                  <td>{item.typeFee}</td>
-                  <td>
+                  <td className="th-fee">{index + 1}</td>
+                  <td className="th-fee">{item.nameFee}</td>
+                  <td className="th-fee">{item.typeFee}</td>
+                  <td className="th-fee">
                     {item.price ? item.price.toLocaleString("vi-VN") + "đ" : ""}
                   </td>
-                  <td>{formatDate(item.startDate)}</td>
-                  <td>{formatDate(item.endDate)}</td>
-                  <td className="btn-table-department">
+                  <td className="th-fee">{formatDate(item.startDate)}</td>
+                  <td className="th-fee">{formatDate(item.endDate)}</td>
+                  <td className="btn-table-department th-fee">
                     <Button type="primary" onClick={() => showFeeDetails(item)}>
                       Chi tiết
                     </Button>
@@ -220,11 +233,12 @@ const Fee = () => {
                       Xóa
                     </Button>
                   </td>
+                  {CheckFeeStatus(item.unpaidRooms)}
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="7">Không tìm thấy dữ liệu phù hợp</td>
+                <td colSpan="8">Không tìm thấy dữ liệu phù hợp</td>
               </tr>
             )}
           </tbody>
